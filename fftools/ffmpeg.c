@@ -111,6 +111,8 @@ const int program_birth_year = 2000;
 
 static FILE *vstats_file;
 
+unsigned long long millisecondsSinceEpoch;
+
 const char *const forced_keyframes_const_names[] = {
     "n",
     "n_forced",
@@ -188,6 +190,14 @@ static int sub2video_get_blank_frame(InputStream *ist)
     memset(frame->data[0], 0, frame->height * frame->linesize[0]);
     return 0;
 }
+
+static unsigned long long pthread_time_in_ms(void)
+{
+     FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+    return (((unsigned long long)ft.dwHighDateTime << 32) + ft.dwLowDateTime - 0x19DB1DED53E8000ULL) / 10000ULL;
+}
+
 
 static void sub2video_copy_rect(uint8_t *dst, int dst_linesize, int w, int h,
                                 AVSubtitleRect *r)
@@ -4844,6 +4854,9 @@ int main(int argc, char **argv)
 {
     int i, ret;
     BenchmarkTimeStamps ti;
+    millisecondsSinceEpoch = pthread_time_in_ms();
+
+    av_log(NULL, AV_LOG_INFO, "maintime:%llu\n", millisecondsSinceEpoch);
 
     init_dynload();
 
