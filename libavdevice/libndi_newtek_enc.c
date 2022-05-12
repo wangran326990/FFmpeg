@@ -39,13 +39,6 @@ struct NDIContext {
     AVFrame *last_avframe;
 };
 
-static unsigned long long pthread_time_in_ms(void)
- {
-	 FILETIME ft;
-    GetSystemTimeAsFileTime(&ft);
-    return (((unsigned long long)ft.dwHighDateTime << 32) + ft.dwLowDateTime - 0x19DB1DED53E8000ULL) / 10000ULL;
- }
-
 
 static int ndi_write_trailer(AVFormatContext *avctx)
 {
@@ -66,15 +59,6 @@ static int ndi_write_video_packet(AVFormatContext *avctx, AVStream *st, AVPacket
 {
     struct NDIContext *ctx = avctx->priv_data;
     AVFrame *avframe, *tmp = (AVFrame *)pkt->data;
-	
-	static int shouldDumpStart = 1;
-
-	if (shouldDumpStart == 1) {
-		shouldDumpStart = 0;
-	    unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
-	    av_log(NULL, AV_LOG_INFO, "dshowtime:%llu\n", millisecondsSinceEpoch2);
-
-	}
 	
     if (tmp->format != AV_PIX_FMT_UYVY422 && tmp->format != AV_PIX_FMT_BGRA &&
         tmp->format != AV_PIX_FMT_BGR0 && tmp->format != AV_PIX_FMT_RGBA &&
@@ -247,8 +231,6 @@ static int ndi_setup_video(AVFormatContext *avctx, AVStream *st)
 
 static int ndi_write_header(AVFormatContext *avctx)
 {
-	unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
-    av_log(NULL, AV_LOG_INFO, "dshowruntime:%llu\n", millisecondsSinceEpoch2);
     int ret = 0;
     unsigned int n;
     struct NDIContext *ctx = avctx->priv_data;

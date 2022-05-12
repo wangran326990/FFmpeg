@@ -26,6 +26,13 @@
 
 #include "libndi_newtek_common.h"
 
+static unsigned long long pthread_time_in_ms(void)
+ {
+	 FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+    return (((unsigned long long)ft.dwHighDateTime << 32) + ft.dwLowDateTime - 0x19DB1DED53E8000ULL) / 10000ULL;
+ }
+
 struct NDIContext {
     const AVClass *cclass;
 
@@ -47,6 +54,15 @@ static int ndi_set_video_packet(AVFormatContext *avctx, NDIlib_video_frame_v2_t 
 {
     int ret;
     struct NDIContext *ctx = avctx->priv_data;
+	
+	static int shouldDumpStart = 1;
+
+	if (shouldDumpStart == 1) {
+		shouldDumpStart = 0;
+	    unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
+	    av_log(NULL, AV_LOG_INFO, "dshowtime:%llu\n", millisecondsSinceEpoch2);
+
+	}
 
     ret = av_new_packet(pkt, v->yres * v->line_stride_in_bytes);
     if (ret < 0)
@@ -145,6 +161,8 @@ static int ndi_read_header(AVFormatContext *avctx)
     const NDIlib_tally_t tally_state = { .on_program = true, .on_preview = false };
     struct NDIContext *ctx = avctx->priv_data;
 
+	unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
+    av_log(NULL, AV_LOG_INFO, "dshowruntime:%llu\n", millisecondsSinceEpoch2);
     if (!NDIlib_initialize()) {
         av_log(avctx, AV_LOG_ERROR, "NDIlib_initialize failed.\n");
         return AVERROR_EXTERNAL;
