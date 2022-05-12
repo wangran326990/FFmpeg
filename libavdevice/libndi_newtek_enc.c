@@ -46,7 +46,6 @@ static unsigned long long pthread_time_in_ms(void)
     return (((unsigned long long)ft.dwHighDateTime << 32) + ft.dwLowDateTime - 0x19DB1DED53E8000ULL) / 10000ULL;
  }
 
-extern unsigned long long millisecondsSinceEpoch;
 
 static int ndi_write_trailer(AVFormatContext *avctx)
 {
@@ -74,7 +73,6 @@ static int ndi_write_video_packet(AVFormatContext *avctx, AVStream *st, AVPacket
 		shouldDumpStart = 0;
 	    unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
 	    av_log(NULL, AV_LOG_INFO, "dshowtime:%llu\n", millisecondsSinceEpoch2);
-	    av_log(NULL, AV_LOG_INFO, "dshowtimediff:%llu\n", millisecondsSinceEpoch2 - millisecondsSinceEpoch);
 
 	}
 	
