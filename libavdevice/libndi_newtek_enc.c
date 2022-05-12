@@ -25,6 +25,7 @@
 #include "libavutil/imgutils.h"
 
 #include "libndi_newtek_common.h"
+#include "fftools/ffmpeg.h"
 
 struct NDIContext {
     const AVClass *cclass;
@@ -46,7 +47,6 @@ static unsigned long long pthread_time_in_ms(void)
     return (((unsigned long long)ft.dwHighDateTime << 32) + ft.dwLowDateTime - 0x19DB1DED53E8000ULL) / 10000ULL;
  }
 
-extern unsigned long long millisecondsSinceEpoch;
 
 static int ndi_write_trailer(AVFormatContext *avctx)
 {
