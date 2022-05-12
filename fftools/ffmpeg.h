@@ -443,8 +443,6 @@ enum forced_keyframes_const {
 
 extern const char *const forced_keyframes_const_names[];
 
-extern unsigned long long millisecondsSinceEpoch;
-
 typedef enum {
     ENCODER_FINISHED = 1,
     MUXER_FINISHED = 2,
