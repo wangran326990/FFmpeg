@@ -187,7 +187,7 @@ static int ndi_read_header(AVFormatContext *avctx)
         av_log(avctx, AV_LOG_ERROR, "NDIlib_recv_create2 failed.\n");
         return AVERROR(EIO);
     }
-	unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
+	millisecondsSinceEpoch2 = pthread_time_in_ms();
     av_log(NULL, AV_LOG_INFO, "ndi_recv_create_time:%llu\n", millisecondsSinceEpoch2);
     /* Set tally */
     NDIlib_recv_set_tally(ctx->recv, &tally_state);
