@@ -187,7 +187,8 @@ static int ndi_read_header(AVFormatContext *avctx)
         av_log(avctx, AV_LOG_ERROR, "NDIlib_recv_create2 failed.\n");
         return AVERROR(EIO);
     }
-
+	unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
+    av_log(NULL, AV_LOG_INFO, "ndi_recv_create_time:%llu\n", millisecondsSinceEpoch2);
     /* Set tally */
     NDIlib_recv_set_tally(ctx->recv, &tally_state);
 
@@ -201,6 +202,14 @@ static int ndi_create_video_stream(AVFormatContext *avctx, NDIlib_video_frame_v2
     AVStream *st;
     AVRational tmp;
     struct NDIContext *ctx = avctx->priv_data;
+	
+	static int shouldDumpStart = 1;
+
+	if (shouldDumpStart == 1) {
+		shouldDumpStart = 0;
+	    unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
+	    av_log(NULL, AV_LOG_INFO, "ndi_create_video_stream:%llu\n", millisecondsSinceEpoch2);
+	}
 
     st = avformat_new_stream(avctx, NULL);
     if (!st) {
@@ -277,6 +286,15 @@ static int ndi_create_audio_stream(AVFormatContext *avctx, NDIlib_audio_frame_v2
 
 static int ndi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
 {
+	
+	static int shouldDumpStart = 1;
+
+	if (shouldDumpStart == 1) {
+		shouldDumpStart = 0;
+	    unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
+	    av_log(NULL, AV_LOG_INFO, "ndi_read_packet:%llu\n", millisecondsSinceEpoch2);
+	}
+	
     int ret = 0;
     struct NDIContext *ctx = avctx->priv_data;
 
