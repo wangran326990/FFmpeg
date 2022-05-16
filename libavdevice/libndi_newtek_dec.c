@@ -288,12 +288,6 @@ static int ndi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
 {
 	
 	static int shouldDumpStart = 1;
-
-	if (shouldDumpStart == 1) {
-		shouldDumpStart = 0;
-	    unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
-	    av_log(NULL, AV_LOG_INFO, "ndi_read_packet:%llu\n", millisecondsSinceEpoch2);
-	}
 	
     int ret = 0;
     struct NDIContext *ctx = avctx->priv_data;
@@ -309,6 +303,11 @@ static int ndi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
         av_log(avctx, AV_LOG_DEBUG, "NDIlib_recv_capture=%d\n", t);
 
         if (t == NDIlib_frame_type_video) {
+			if (shouldDumpStart == 1) {
+				shouldDumpStart = 0;
+				unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
+				av_log(NULL, AV_LOG_INFO, "ndi_read_packet:%llu\n", millisecondsSinceEpoch2);
+			}
             if (!ctx->video_st)
                 ret = ndi_create_video_stream(avctx, &v);
             if (!ret)
@@ -317,6 +316,11 @@ static int ndi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
             break;
         }
         else if (t == NDIlib_frame_type_audio) {
+			if (shouldDumpStart == 1) {
+				shouldDumpStart = 0;
+				unsigned long long millisecondsSinceEpoch2 = pthread_time_in_ms();
+				av_log(NULL, AV_LOG_INFO, "ndi_read_packet:%llu\n", millisecondsSinceEpoch2);
+			}
             if (!ctx->audio_st)
                 ret = ndi_create_audio_stream(avctx, &a);
             if (!ret)
